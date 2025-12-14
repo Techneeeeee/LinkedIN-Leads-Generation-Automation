@@ -1,0 +1,1010 @@
+{
+  "name": "LinkedIn Automation V2",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "LinkedIn Lead Outreach Trigger",
+        "formDescription": "Insert an audience for your LinkedIn Outreach Campaign here",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Company Type",
+              "fieldType": "textarea",
+              "placeholder": "Creative Agency, Digital marketing etc...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Role",
+              "fieldType": "textarea",
+              "placeholder": "Founder, CEO etc...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Size",
+              "fieldType": "textarea",
+              "placeholder": "1-100, 1-1000 etc...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Country",
+              "fieldType": "textarea",
+              "placeholder": "India. US etc...",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        -128
+      ],
+      "id": "57bc3de0-23df-4e82-a06d-ac8466c3cd83",
+      "name": "On form submission",
+      "webhookId": "b705b98e-4deb-49b3-8cbc-9624c96e4e26"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "GPT-5"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "You're a helpful, intelligent sales assistant."
+            },
+            {
+              "role": "system",
+              "content": "Your task is to take as input a natural language description of a prospect audience. and turn that into an Apollo Search URL\n\nHere is an example of an Apollo Search URL:\n\nhttps://app.apollo.io/#/people?personLocations[]=United%20States&sortAscending=false&sortByField=%5Bnone%5D&personTitles[]owner&personTitles[]=ceo&personTitles[]=founder&personTitles[]=partner&page=1&qKeywords=creative%20agency&organizationNumEmployeesRanges []=1%2C200\n\nThis URL describes a search for people that are\n-Located in the United States.\n-Hold the titles: Owner, CEO, Founder or Partner.\n-Have a keyword association with \"Creative Agency\".\n\nThese are the fields  you can change:\n\norganizationLocations[], Keywords, personTitles[], and organizationNumEmployeesRanges[]\n\nDo not add or change any other fields. Use the above template\n\nReturn your response in JSON using this format:\n\n{\"serachURL\":\"search url goes here\"}\n"
+            },
+            {
+              "content": "=I want the {{ $json.Role }} of all the {{ $json['Company Type'] }} in the {{ $json.Country }} with company size between {{ $json['Company Size'] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -128
+      ],
+      "id": "60785093-c94a-44a2-9a3f-886ecc879eda",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "W1pDFlPgYWJ91LJs",
+          "name": "Real"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "actorId": {
+          "__rl": true,
+          "value": "kVYdvNOefemtiDXO5",
+          "mode": "list",
+          "cachedResultName": "🎉Leads Scraper ✅ $1/1k Leads ✅ 50K/Run With EMAILS✅Like Apollo (pipelinelabs/lead-scraper-apollo-zoominfo-lusha-ppe)",
+          "cachedResultUrl": "https://console.apify.com/actors/kVYdvNOefemtiDXO5/input"
+        },
+        "customBody": "={\n  \"contact_email_exclude_catch_all\":true,\n  \"contact_email_status_v2_verfied\":true,\n  \"include_email\":true,\n  \"max_result\":5,\n  \"url\":\"{{ $json.output[0].content[0].text.serachURL }}\"\n  \n} ",
+        "timeout": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -128
+      ],
+      "id": "8c8ab6dc-e399-48ec-b641-86e0f35cc5b8",
+      "name": "Run an Actor",
+      "credentials": {
+        "apifyApi": {
+          "id": "gsEroH2wpJV5uSdA",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "offset": {},
+        "limit": 5
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        128
+      ],
+      "id": "235d6625-b194-4e32-a44a-71b94ad1db6d",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "gsEroH2wpJV5uSdA",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1yqAKsqQSU57UX9S3D1S2P_lHx1dVNoXEDkqojnOpv_I",
+          "mode": "list",
+          "cachedResultName": "Lead Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yqAKsqQSU57UX9S3D1S2P_lHx1dVNoXEDkqojnOpv_I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yqAKsqQSU57UX9S3D1S2P_lHx1dVNoXEDkqojnOpv_I/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Run an Actor').item.json.id }}",
+            "first_name": "={{ $('Get dataset items').item.json.firstName }}",
+            "last_name": "={{ $('Get dataset items').item.json.lastName }}",
+            "linkedin_URL": "={{ $('Get dataset items').item.json.linkedinUrl }}",
+            "Postion": "={{ $('Get dataset items').item.json.position }}",
+            "IceBreaker": "={{ $json.output[0].content[0].text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_URL",
+              "displayName": "linkedin_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Postion",
+              "displayName": "Postion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IceBreaker",
+              "displayName": "IceBreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        -48
+      ],
+      "id": "4e9cb838-f9de-4286-937f-2dcba968ee3b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "upW1TuzdrT09wtUl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "74c670d0-c877-46bd-8532-c206347d5713",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are an expert B2B evaluator.\nYour task is NOT to generate a connection message.\nYour task is to ANALYZE whether a given person or company profile is a good match for D’SIAR TECH’s products and solutions.\n\nD’SIAR TECH offers:\n\nLawyer chatbot\n\nEvaluation criteria:\n\nRole (e.g., lawyer, legal professional)\n\nIndustry (e.g., legal, law firm, corporate legal)\n\nCompany size\n\nTechnology relevance (likelihood to adopt a lawyer chatbot)\n\nSpecial rule: If the role is a lawyer or legal professional, classify as \"Fit\" regardless of industry, company size, or other criteria.\n\nOutput: STRICTLY in this JSON format:\n\n{\n  \"fit\": \"Fit\" | \"Not a Fit\"\n}\n\nInstructions:\n\nOnly output clean JSON.\n\nDo not produce explanations, notes, or extra text."
+            },
+            {
+              "content": "=Analyze the following lead for product-match potential:\n\nName: {{ $json.firstName }}{{ $json.lastName }}\nRole: {{ $json.position }}\nCompany: {{ $json.orgName }}\nIndustry: {{ $json.orgIndustry }}\nLinkedIn: {{ $json.orgLinkedinUrl }}\n\nDoes this profile match D’SIAR TECH services?\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        272,
+        144
+      ],
+      "id": "0e9f802b-5381-4acd-a2eb-a7ab62b913e9",
+      "name": "Profile Matching with Company's Profile",
+      "credentials": {
+        "openAiApi": {
+          "id": "W1pDFlPgYWJ91LJs",
+          "name": "Real"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "031240d0-764b-4c3e-8ba3-1e64c07655df",
+              "leftValue": "={{ $json.fit }}",
+              "rightValue": "Fit",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        144
+      ],
+      "id": "0ac9fdb2-a5b0-4c9f-852c-bd2103a8f171",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.output[0].content[0].text;\nconst parsed = JSON.parse(text);\nreturn parsed;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        144
+      ],
+      "id": "c840aa1b-3f0a-4683-8c08-34ce72fbf971",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a helpful assistant for writing LinkedIn connection messages. \nYour task is to generate a professional, friendly, and concise message tailored to the individual so that it encourages collaboration with D’SIAR TECH. \nDo not include anything unrelated to professional outreach. \nReturn only the message in plain text.\n"
+            },
+            {
+              "content": "=Generate a personalized LinkedIn connection message for the following person:\n\nFirst Name: {{ $('Loop Over Items').item.json.firstName }}\nLast Name: {{ $('Loop Over Items').item.json.lastName }}\nRole / Position: {{ $('Loop Over Items').item.json.position }}\nCompany: {{ $('Loop Over Items').item.json.orgName }}\n\nKeep it warm, professional, and concise (1–2 sentences).\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -16
+      ],
+      "id": "7398ade1-a1f2-4e52-bfde-78350ab2682a",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "W1pDFlPgYWJ91LJs",
+          "name": "Real"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.phantombuster.com/api/v2/agents/launch",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Phantombuster-Key",
+              "value": "Dys14jQX079ogt1NSIQ8Yni6gaHp7JZNUmggGipLEW0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "5128632883377835"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1728,
+        -32
+      ],
+      "id": "ce76765c-1b0a-415f-a40e-a03666586757",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "amount": 25
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1936,
+        -32
+      ],
+      "id": "e7fc3baa-33da-485d-8f68-c95a2504fdca",
+      "name": "Wait",
+      "webhookId": "9e4173e5-3362-4d1b-822d-77f07df13db6"
+    },
+    {
+      "parameters": {
+        "url": "https://api.phantombuster.com/api/v2/agents/fetch-output",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "7305538233638378"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Phantombuster-Key",
+              "value": "VYpxsG58y3dSHMC1XQKrlaTlReN6hu9I2cims03MT38"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2144,
+        -32
+      ],
+      "id": "cc1d5aee-ce40-473d-90c3-fdacd8e59d4f",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "74de1044-b671-4407-9274-4e6da6eb62b9",
+              "leftValue": "={{ $json[\"output\"] && $json[\"output\"][0]?.firstName }}",
+              "rightValue": "is not empty",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2352,
+        -32
+      ],
+      "id": "46732376-f6d5-452b-adf6-ff89d3b84958",
+      "name": "If1"
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Company Type": "Creative Agency",
+          "Role": "Founder",
+          "Company Size": "1-100",
+          "Country": "India",
+          "submittedAt": "2025-12-11T03:03:29.354+05:30",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Message a model": [
+      {
+        "json": {
+          "output": [
+            {
+              "id": "msg_0a0fd0ed940dbcf6006939e758fd18819f8ccba103803708ad",
+              "type": "message",
+              "status": "completed",
+              "content": [
+                {
+                  "type": "output_text",
+                  "annotations": [],
+                  "logprobs": [],
+                  "text": "{\"serachURL\":\"https://app.apollo.io/#/people?personLocations[]=India&sortAscending=false&sortByField=%5Bnone%5D&personTitles[]=founder&page=1&qKeywords=creative%20agency&organizationNumEmployeesRanges []=1%2C100\"}"
+                }
+              ],
+              "role": "assistant"
+            }
+          ]
+        }
+      }
+    ],
+    "Run an Actor": [
+      {
+        "json": {
+          "id": "obyMsmHJFPEtfccr8",
+          "actId": "kVYdvNOefemtiDXO5",
+          "userId": "WPWhCV8rs3BA7bzYw",
+          "startedAt": "2025-12-10T21:35:04.803Z",
+          "finishedAt": "2025-12-10T21:35:12.201Z",
+          "status": "SUCCEEDED",
+          "meta": {
+            "origin": "API",
+            "userAgent": "axios/1.12.0"
+          },
+          "stats": {
+            "inputBodyLen": 242,
+            "migrationCount": 0,
+            "rebootCount": 0,
+            "restartCount": 0,
+            "durationMillis": 7265,
+            "resurrectCount": 0,
+            "runTimeSecs": 7.265,
+            "metamorph": 0,
+            "computeUnits": 0.0020180555555555555,
+            "memAvgBytes": 59857619.09503315,
+            "memMaxBytes": 66564096,
+            "memCurrentBytes": 0,
+            "cpuAvgUsage": 1.5217360009128795,
+            "cpuMaxUsage": 35.45826302729528,
+            "cpuCurrentUsage": 0,
+            "netRxBytes": 165632,
+            "netTxBytes": 63699
+          },
+          "options": {
+            "build": "0.0.34",
+            "timeoutSecs": 1200,
+            "memoryMbytes": 1024,
+            "maxItems": null,
+            "maxTotalChargeUsd": 3.799182,
+            "diskMbytes": 2048
+          },
+          "buildId": "PLyL65FI2tSGR9W6o",
+          "exitCode": 0,
+          "defaultKeyValueStoreId": "aYYV2z5NxkawXjA5f",
+          "defaultDatasetId": "CrC4xZHIoeApyWqXm",
+          "defaultRequestQueueId": "KEwWIETt0oN75Ye6R",
+          "pricingInfo": {
+            "minimalMaxTotalChargeUsd": null,
+            "pricingModel": "PAY_PER_EVENT",
+            "isPriceChangeNotificationSuppressed": false,
+            "startedAt": "2025-10-08T20:57:50.300Z",
+            "createdAt": "2025-10-08T20:57:53.273Z",
+            "apifyMarginPercentage": 0,
+            "pricingPerEvent": {
+              "actorChargeEvents": {
+                "apify-actor-start": {
+                  "eventTitle": "Actor Start",
+                  "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                  "eventPriceUsd": 0.00001,
+                  "isOneTimeEvent": true
+                },
+                "lead-returned": {
+                  "eventTitle": "Lead Returned",
+                  "eventDescription": "Charged when a lead is scraped and returned to the client.",
+                  "eventPriceUsd": 0.001
+                }
+              }
+            }
+          },
+          "chargedEventCounts": {
+            "apify-actor-start": 1,
+            "lead-returned": 100
+          },
+          "platformUsageBillingModel": "DEVELOPER",
+          "accountedChargedEventCounts": {
+            "apify-actor-start": 1,
+            "lead-returned": 100
+          },
+          "integrationTracking": {
+            "platform": "n8n",
+            "appId": null,
+            "isAiTool": false
+          },
+          "generalAccess": "FOLLOW_USER_SETTING",
+          "buildNumber": "0.0.34",
+          "containerUrl": "https://wuuymm9fawap.runs.apify.net",
+          "usageTotalUsd": 0.10001,
+          "consoleUrl": "https://console.apify.com/view/runs/obyMsmHJFPEtfccr8"
+        }
+      }
+    ],
+    "Get dataset items": [
+      {
+        "json": {
+          "city": "Fribourg",
+          "country": "Switzerland",
+          "email": "",
+          "firstName": "Pascal",
+          "fullName": "Pascal Friolet",
+          "functional": "",
+          "lastName": "Friolet",
+          "linkedinUrl": "http://www.linkedin.com/in/pascal-friolet-738b27a5",
+          "orgCity": "",
+          "orgCountry": "Austria",
+          "orgDescription": "Ich zeige Ihnen ...\\\\... wie Sie überflüssige Fettablagerungen abbauen können, um einen vitaleren Körper zu erhalten;\\\\... wie Sie in einer gewissen Zeit eine Gewichtsabnahme erreichen (je nach persönlicher Ausgangslage);\\\\Sie bekommen Einsicht, wie man isst und ein vitales Leben ohne überflüssigen Ballast führen kann.\\\\Sind Sie es LEID beim Abnehmen alleine gelassen zu werden? Ich Coache Sie gerne.\\\\98 % meiner Kunden reduzieren ihr Körpergewicht mit 'Wunschgewicht-Coaching' ohne Diät schlank werden und bleiben innerhalb von wenigen Wochen (je nach persönlicher Ausgangslage)",
+          "orgFoundedYear": "",
+          "orgIndustry": "['health, wellness & fitness']",
+          "orgLinkedinUrl": "['http://www.linkedin.com/company/1238203']",
+          "orgName": "Selbständig",
+          "orgSize": 45412,
+          "orgState": "Vienna",
+          "orgWebsite": "http://www.abnehmen-schlank-werden.de",
+          "phone": "",
+          "position": "Rechtsanwalt",
+          "seniority": "entry",
+          "state": "Canton of Fribourg",
+          "ppeIndex": 1200,
+          "ppeBatchIndex": 0
+        }
+      },
+      {
+        "json": {
+          "city": "Westerville",
+          "country": "United States",
+          "email": "",
+          "firstName": "Hanna",
+          "fullName": "Hanna Wiley",
+          "functional": "['education']",
+          "lastName": "Wiley",
+          "linkedinUrl": "http://www.linkedin.com/in/hanna-wiley-083737109",
+          "orgCity": "City of Orange",
+          "orgCountry": "United States",
+          "orgDescription": "Orange Middle School is an Education Management company located in 400 Central Ave, Orange, New Jersey, United States.",
+          "orgFoundedYear": "",
+          "orgIndustry": "['education management']",
+          "orgLinkedinUrl": "['http://www.linkedin.com/company/4095992']",
+          "orgName": "Orange Middle School",
+          "orgSize": 5,
+          "orgState": "New Jersey",
+          "orgWebsite": "",
+          "phone": "",
+          "position": "Student Teacher",
+          "seniority": "entry",
+          "state": "Ohio",
+          "ppeIndex": 1201,
+          "ppeBatchIndex": 1
+        }
+      },
+      {
+        "json": {
+          "city": "London",
+          "country": "United Kingdom",
+          "email": "jeanie.pollock@saffery.com",
+          "firstName": "Jeanie",
+          "fullName": "Jeanie Pollock",
+          "functional": "",
+          "lastName": "Pollock",
+          "linkedinUrl": "http://www.linkedin.com/in/jeanie-pollock-712a274b",
+          "orgCity": "London",
+          "orgCountry": "United Kingdom",
+          "orgDescription": "Saffery Champness LLP is a top 20 firm of chartered accountants with nine offices in the UK, plus offices in Geneva, Guernsey and Zurich. The firm has more than 70 partners and directors, and over 600 members of staff.\\\\We specialise in the following sectors:\\• Corporate\\• Entrepreneurs\\• International\\• Landed estates and rural businesses\\• Not-for-profit\\• Private wealth\\• Trusts\\• Offshore fiduciary\\• Professional and consultancy businesses \\• Regulated entities\\• Property\\• Sports and entertainment\\\\Saffery Champness is a member of Nexia International, a worldwide network of accounting and consulting firms in over 120 countries.\\\\The firm was founded by Joseph John Saffery in 1855.\\\\For further information about the firm, please visit www.saffery.com.\\\\Follow us: \\Twitter: @safferys\\YouTube: https://www.youtube.com/channel/UCXR88yBPil9YZLO_5A__lzQ",
+          "orgFoundedYear": 1855,
+          "orgIndustry": "['accounting']",
+          "orgLinkedinUrl": "['http://www.linkedin.com/company/25532']",
+          "orgName": "Saffery Champness",
+          "orgSize": 434,
+          "orgState": "England",
+          "orgWebsite": "http://www.saffery.com",
+          "phone": "",
+          "position": "Partners' secretary",
+          "seniority": "entry",
+          "state": "England",
+          "ppeIndex": 1202,
+          "ppeBatchIndex": 2
+        }
+      },
+      {
+        "json": {
+          "city": "Falmouth",
+          "country": "United States",
+          "email": "mmastriano@falmouth.k12.ma.us",
+          "firstName": "Micajah",
+          "fullName": "Micajah Mastriano",
+          "functional": "['education']",
+          "lastName": "Mastriano",
+          "linkedinUrl": "http://www.linkedin.com/in/micajah-mastriano-99048967",
+          "orgCity": "Falmouth",
+          "orgCountry": "United States",
+          "orgDescription": "Through rigorous and engaging learning experiences, the Falmouth Public Schools, in partnership with the greater Falmouth community, will foster students' growth and achievement by providing them with opportunities to gain knowledge, skills, and habits of mind to be successful as productive members of society.\\http://www.falmouth.k12.ma.us/\\\\The Mission of the Falmouth Public Schools is to educate students so that they are engaged in their education in a way which develops their capacity to pursue their goals and fosters life-long learning.\\\\In order to ensure success for all students, three core beliefs define us as a school system and enable us to accomplish our mission:\\\\- Continuous Improvement for Students, Teachers, Staff, and Administrators\\- Enthusiasm for Teaching and Learning\\- Collaboration in Teaching and Learning",
+          "orgFoundedYear": 1912,
+          "orgIndustry": "['primary/secondary education']",
+          "orgLinkedinUrl": "['http://www.linkedin.com/company/662711']",
+          "orgName": "Falmouth Public Schools",
+          "orgSize": 127,
+          "orgState": "Massachusetts",
+          "orgWebsite": "http://www.falmouth.k12.ma.us",
+          "phone": "",
+          "position": "Teacher",
+          "seniority": "entry",
+          "state": "Massachusetts",
+          "ppeIndex": 1203,
+          "ppeBatchIndex": 3
+        }
+      },
+      {
+        "json": {
+          "city": "Venâncio Aires",
+          "country": "Brazil",
+          "email": "sandra@bb.com.br",
+          "firstName": "Sandra",
+          "fullName": "Sandra Baierle",
+          "functional": "",
+          "lastName": "Baierle",
+          "linkedinUrl": "http://www.linkedin.com/in/sandra-baierle-73a36092",
+          "orgCity": "",
+          "orgCountry": "Brazil",
+          "orgDescription": "Eu experimentei um novo jeito de me comunicar com você. Você usa o mundo digital para criar um universo totalmente seu e nesse novo universo eu acompanho você. \\\\Eu sei… Você é muito mais que digital. Eu olho para você e me vejo. Este é um dos motivos de eu estar aqui para conversar com você. \\\\Eu sou brasileiro como você. Eu sou um banco de mercado para manter a sustentabilidade da minha atuação. \\\\Eu fomento a produção agropecuária e a indústria nacional. Sou o maior parceiro das micro e pequenas empresas.\\\\Invisto há décadas no esporte brasileiro porque acredito na sua competência e garra. \\\\Eu tenho espírito público para criar valor para cada um dos brasileiros. Persigo a eficiência, com determinação, para otimizar os recursos disponíveis pensando nesta e em futuras gerações. \\\\Acredito no potencial de todas as pessoas e tenho como objetivo de vida ser uma referência de comportamento pessoal e profissional. Inovo a cada passo que dou para garantir que você e todos os brasileiros possam contar comigo sempre. Eu sou mais que digital. \\\\Estou aqui no LinkedIn para conversar com você sobre como podemos fazer um presente e um futuro melhores.\\\\Me encontre também nos outros canais:\\Facebook: www.facebook.com/bancodobrasil\\Twitter: www.twitter.com/bancodobrasil\\Instagram: www.instagram.com/bancodobrasil",
+          "orgFoundedYear": 1808,
+          "orgIndustry": "['banking']",
+          "orgLinkedinUrl": "['http://www.linkedin.com/company/162626']",
+          "orgName": "Banco do Brasil",
+          "orgSize": 23673,
+          "orgState": "",
+          "orgWebsite": "http://www.bb.com.br",
+          "phone": "",
+          "position": "bancario",
+          "seniority": "entry",
+          "state": "Rio Grande do Sul",
+          "ppeIndex": 1204,
+          "ppeBatchIndex": 4
+        }
+      }
+    ],
+    "Profile Matching with Company's Profile": [
+      {
+        "json": {
+          "output": [
+            {
+              "id": "msg_0b45b5dd0b83aff6006939f6b92948819db554747788028ba9",
+              "type": "message",
+              "status": "completed",
+              "content": [
+                {
+                  "type": "output_text",
+                  "annotations": [],
+                  "logprobs": [],
+                  "text": "{\n  \"fit\": \"Fit\"\n}"
+                }
+              ],
+              "role": "assistant"
+            }
+          ]
+        }
+      }
+    ],
+    "Code in JavaScript": [
+      {
+        "json": {
+          "fit": "Fit"
+        }
+      }
+    ],
+    "Message a model1": [
+      {
+        "json": {
+          "output": [
+            {
+              "id": "msg_0f972769aa1645a300693b300d04a881a0829c2bb571f3a4b8",
+              "type": "message",
+              "status": "completed",
+              "content": [
+                {
+                  "type": "output_text",
+                  "annotations": [],
+                  "logprobs": [],
+                  "text": "Hello Pascal, I’m impressed by your expertise as a Rechtsanwalt and would love to connect to explore potential opportunities for collaboration with D’SIAR TECH. Looking forward to connecting!"
+                }
+              ],
+              "role": "assistant"
+            }
+          ]
+        }
+      }
+    ],
+    "Append row in sheet": [
+      {
+        "json": {
+          "id": "obyMsmHJFPEtfccr8",
+          "first_name": "Pascal",
+          "last_name": "Friolet",
+          "linkedin_URL": "http://www.linkedin.com/in/pascal-friolet-738b27a5",
+          "Postion": "Rechtsanwalt",
+          "IceBreaker": "Hello Pascal, I’m impressed by your expertise as a Rechtsanwalt and would love to connect to explore potential opportunities for collaboration with D’SIAR TECH. Looking forward to connecting!"
+        }
+      }
+    ],
+    "Wait": [
+      {
+        "json": {
+          "containerId": "1966502753233577"
+        }
+      }
+    ],
+    "HTTP Request": [
+      {
+        "json": {
+          "containerId": "8695744221992767"
+        }
+      }
+    ],
+    "HTTP Request1": [
+      {
+        "json": {
+          "containerId": "1827420989679041",
+          "status": "finished",
+          "output": "(node:1) NOTE: The AWS SDK for JavaScript (v2) will enter maintenance mode\r\non September 8, 2024 and reach end-of-support on September 8, 2025.\r\n\r\nPlease migrate your code to use AWS SDK for JavaScript (v3).\r\nFor more information, check blog post at https://a.co/cUPnyil\r\n(Use `node --trace-warnings ...` to show where the warning was created)\r\n* Container 1827420989679041 started in br-scw-fr-idf-3-mirri (Sun Dec 14 2025 21:10:36 GMT+0000 (Coordinated Universal Time))\r\n* Storage: Using bucket: phantombuster (environment: prod)\r\n* Got dependency LinkedIn New Connection Welcome Message.js\r\n* Spawning Node v16.20.2\r\n* Storage: Using bucket: phantombuster (environment: prod)\r\n* using version 1.740.0\r\n[info_]ℹ️ Manually launching Worker LinkedIn Connections Export...\r\n[done_]✅ Successfully connected to LinkedIn as Techne king\r\n* Process finished successfully (exit code: 0) (Sun Dec 14 2025 21:10:39 GMT+0000 (Coordinated Universal Time))\r\n",
+          "outputPos": 8085,
+          "mostRecentEndedAt": 1765746640903,
+          "isAgentRunning": false,
+          "canSoftAbort": false
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Profile Matching with Company's Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profile Matching with Company's Profile": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "62a3f3bd-8a95-4167-933e-91d40bcd22db",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a81ede1f018a4e8957a5d92bcfe6b9a0854fbffffac9f7a6cd478ca9c846b64d"
+  },
+  "id": "LXs1juhCCARuo1nE",
+  "tags": []
+}
