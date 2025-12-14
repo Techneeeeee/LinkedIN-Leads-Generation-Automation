@@ -101,7 +101,7 @@ The workflow consists of the following key stages:
     * **Node:** `Wait`
     * **Function:** Adds a delay to avoid rate limits or API overloads.
    
-13. **LinkedIn Calendly Link shaking Automation via Phantombuster**
+13. **LinkedIn Calendly Link sharing Automation via Phantombuster**
 
     * **Node:** `HTTP Request1`
     * **Function:** pass the calendly once our connection has been accepted.
@@ -109,4 +109,4 @@ The workflow consists of the following key stages:
 14. **Conditional Checks**
 
     * **Node:** `If1`
-    * **Function:** calendly link shared connections data are collected for futher saving (future addition).
+    * **Function:** Calendly link shared connections data are collected for futher saving (future addition).
